@@ -1,44 +1,42 @@
 @echo off
-:: Đổi sang mã UTF-8 để hiển thị tiếng Việt
+:: Doi ma ky tu sang UTF-8
 chcp 65001 >nul
 
-:: Kiểm tra quyền administrator
+:: Kiem tra quyen administrator
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo.
-    echo [LỖI] Vui lòng chạy file này bằng quyền Administrator.
-    echo Click chuột phải > "Run as administrator"
+    echo [LOI] Hay chay file nay bang quyen Administrator.
+    echo Click chuot phai > "Run as administrator"
     pause
     exit /b
 )
 
 setlocal
 
-:: Thông tin tài khoản
+:: Thong tin tai khoan
 set "USERNAME=Test"
-set "PASSWORD=Test@1234!"
+set "PASSWORD=T3st@User2025#"
 
-:: Tạo user
+:: Tao user
 net user %USERNAME% %PASSWORD% /add
 
-:: Gỡ khỏi nhóm Administrators nếu có (ẩn lỗi nếu không có)
+:: Goi nhom Administrators (neu co)
 net localgroup Administrators %USERNAME% /delete 2>nul
 
-:: Thêm vào nhóm Users
+:: Them vao nhom Users
 net localgroup Users %USERNAME% /add
 
-:: Thêm vào nhóm Remote Desktop Users
+:: Cho phep Remote Desktop
 net localgroup "Remote Desktop Users" %USERNAME% /add
 
-:: Không cho phép đổi mật khẩu
-wmic useraccount where name="%USERNAME%" set PasswordChangeable=FALSE
-
-:: Mật khẩu không hết hạn
-wmic useraccount where name="%USERNAME%" set PasswordExpires=FALSE
+:: Su dung PowerShell de dat tuy chon mat khau (an toan hon WMIC)
+powershell -Command "Set-LocalUser -Name '%USERNAME%' -PasswordNeverExpires \$true -UserMayChangePassword \$false"
 
 echo.
-echo === USER ĐÃ TẠO THÀNH CÔNG ===
+echo === USER DA TAO THANH CONG ===
 echo User: %USERNAME%
-echo Có thể đăng nhập Remote Desktop, nhưng không cài đặt app nếu không có mật khẩu admin.
+echo Da co quyen dang nhap Remote Desktop.
+echo Khi cai app se bi hoi mat khau admin.
 echo.
 pause
