@@ -1,4 +1,7 @@
 @echo off
+:: Đổi sang mã UTF-8 để hiển thị tiếng Việt
+chcp 65001 >nul
+
 :: Kiểm tra quyền administrator
 net session >nul 2>&1
 if %errorlevel% neq 0 (
@@ -13,13 +16,13 @@ setlocal
 
 :: Thông tin tài khoản
 set "USERNAME=Test"
-set "PASSWORD=Test@1234"
+set "PASSWORD=Test@1234!"
 
 :: Tạo user
 net user %USERNAME% %PASSWORD% /add
 
-:: Gỡ khỏi nhóm Administrators nếu có
-net localgroup Administrators %USERNAME% /delete
+:: Gỡ khỏi nhóm Administrators nếu có (ẩn lỗi nếu không có)
+net localgroup Administrators %USERNAME% /delete 2>nul
 
 :: Thêm vào nhóm Users
 net localgroup Users %USERNAME% /add
@@ -36,6 +39,6 @@ wmic useraccount where name="%USERNAME%" set PasswordExpires=FALSE
 echo.
 echo === USER ĐÃ TẠO THÀNH CÔNG ===
 echo User: %USERNAME%
-echo Co the dang nhap Remote Desktop, nhung khong cai dat app neu khong co mat khau admin.
+echo Có thể đăng nhập Remote Desktop, nhưng không cài đặt app nếu không có mật khẩu admin.
 echo.
 pause
