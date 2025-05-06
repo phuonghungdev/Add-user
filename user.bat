@@ -26,17 +26,14 @@ net localgroup "Remote Desktop Users" %USERNAME% /add
 :: Cai dat quyen khong duoc doi mat khau, khong het han mat khau
 powershell -Command "Set-LocalUser -Name '%USERNAME%' -PasswordNeverExpires \$true -UserMayChangePassword \$false"
 
-:: Chặn quyền tắt máy
-reg add "HKU\%USERNAME%\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoShutDown /t REG_DWORD /d 1 /f
-
-:: Chặn quyền khởi động lại máy
-reg add "HKU\%USERNAME%\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoRestart /t REG_DWORD /d 1 /f
+:: Xoa quyen tat may va restart bang ntrights
+ntrights.exe -u %USERNAME% -r SeShutdownPrivilege
+ntrights.exe -u %USERNAME% -r SeRemoteShutdownPrivilege
 
 echo.
 echo === USER DA TAO THANH CONG ===
 echo User: %USERNAME%
 echo Co the dang nhap Remote Desktop.
-echo Khi cai app se bi hoi mat khau admin.
-echo User da bi chan quyen tat may va khoi dong lai may.
+echo User KHONG CO quyen tat hoac khoi dong lai may.
 echo.
 pause
