@@ -1,18 +1,31 @@
 @echo off
+:: Kiểm tra quyền administrator
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo.
+    echo [LỖI] Vui lòng chạy file này bằng quyền Administrator.
+    echo Click chuột phải > "Run as administrator"
+    pause
+    exit /b
+)
+
 setlocal
 
 :: Thông tin tài khoản
 set "USERNAME=Test"
-set "PASSWORD=Admin@123"
+set "PASSWORD=Test@1234"
 
 :: Tạo user
 net user %USERNAME% %PASSWORD% /add
 
-:: Đảm bảo user không nằm trong nhóm Administrators
+:: Gỡ khỏi nhóm Administrators nếu có
 net localgroup Administrators %USERNAME% /delete
 
-:: Thêm vào nhóm Users (mặc định, không có quyền admin)
+:: Thêm vào nhóm Users
 net localgroup Users %USERNAME% /add
+
+:: Thêm vào nhóm Remote Desktop Users
+net localgroup "Remote Desktop Users" %USERNAME% /add
 
 :: Không cho phép đổi mật khẩu
 wmic useraccount where name="%USERNAME%" set PasswordChangeable=FALSE
@@ -21,6 +34,8 @@ wmic useraccount where name="%USERNAME%" set PasswordChangeable=FALSE
 wmic useraccount where name="%USERNAME%" set PasswordExpires=FALSE
 
 echo.
-echo User %USERNAME% đã được tạo với quyền hạn giới hạn.
-echo Người dùng sẽ bị yêu cầu nhập mật khẩu admin khi cài đặt phần mềm.
+echo === USER ĐÃ TẠO THÀNH CÔNG ===
+echo User: %USERNAME%
+echo Co the dang nhap Remote Desktop, nhung khong cai dat app neu khong co mat khau admin.
+echo.
 pause
